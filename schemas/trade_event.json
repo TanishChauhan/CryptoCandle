@@ -1,0 +1,18 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TradeEvent",
+  "type": "object",
+  "required": ["event_id", "symbol", "trade_id", "price", "quantity", "trade_time_ms"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "symbol": { "type": "string" },
+    "trade_id": { "type": "integer" },
+    "price": { "type": "string" },
+    "quantity": { "type": "string" },
+    "quote_qty": { "type": "string" },
+    "trade_time_ms": { "type": "integer" },
+    "is_buyer_maker": { "type": "boolean" },
+    "ingested_at_ms": { "type": "integer" },
+    "source": { "type": "string" }
+  }
+}

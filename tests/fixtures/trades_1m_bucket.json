@@ -1,0 +1,38 @@
+[
+  {
+    "event_id": "btcusdt-1-1710000000000",
+    "symbol": "BTCUSDT",
+    "trade_id": 1,
+    "price": "67000.00",
+    "quantity": "0.100",
+    "quote_qty": "6700.00",
+    "trade_time_ms": 1710000000000,
+    "is_buyer_maker": true,
+    "ingested_at_ms": 1710000000000,
+    "source": "binance_ws"
+  },
+  {
+    "event_id": "btcusdt-2-1710000000100",
+    "symbol": "BTCUSDT",
+    "trade_id": 2,
+    "price": "67100.00",
+    "quantity": "0.200",
+    "quote_qty": "13420.00",
+    "trade_time_ms": 1710000000100,
+    "is_buyer_maker": false,
+    "ingested_at_ms": 1710000000100,
+    "source": "binance_ws"
+  },
+  {
+    "event_id": "btcusdt-3-1710000000200",
+    "symbol": "BTCUSDT",
+    "trade_id": 3,
+    "price": "66900.00",
+    "quantity": "0.050",
+    "quote_qty": "3345.00",
+    "trade_time_ms": 1710000000200,
+    "is_buyer_maker": true,
+    "ingested_at_ms": 1710000000200,
+    "source": "binance_ws"
+  }
+]

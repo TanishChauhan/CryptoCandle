@@ -1,0 +1,4 @@
+# DB migrate + admin user only (no PySpark/JRE — avoids OOM on init).
+FROM apache/airflow:2.9.0-python3.11
+
+USER airflow

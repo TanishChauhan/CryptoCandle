@@ -1,0 +1,38 @@
+[
+  {
+    "event_id": "btcusdt-100-1710000000000",
+    "symbol": "BTCUSDT",
+    "trade_id": 100,
+    "price": "67000.10",
+    "quantity": "0.100",
+    "quote_qty": "6700.01",
+    "trade_time_ms": 1710000000000,
+    "is_buyer_maker": true,
+    "ingested_at_ms": 1710000000200,
+    "source": "binance_ws"
+  },
+  {
+    "event_id": "ethusdt-101-1710000000300",
+    "symbol": "ETHUSDT",
+    "trade_id": 101,
+    "price": "3100.00",
+    "quantity": "1.250",
+    "quote_qty": "3875.00",
+    "trade_time_ms": 1710000000300,
+    "is_buyer_maker": false,
+    "ingested_at_ms": 1710000000500,
+    "source": "binance_ws"
+  },
+  {
+    "event_id": "solusdt-102-1710000000600",
+    "symbol": "SOLUSDT",
+    "trade_id": 102,
+    "price": null,
+    "quantity": "5.000",
+    "quote_qty": "750.00",
+    "trade_time_ms": 1710000000600,
+    "is_buyer_maker": true,
+    "ingested_at_ms": 1710000000800,
+    "source": "binance_ws"
+  }
+]

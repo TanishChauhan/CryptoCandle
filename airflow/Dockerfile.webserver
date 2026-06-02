@@ -1,0 +1,9 @@
+# Lightweight UI only — no PySpark/JRE (batch deps live on airflow-scheduler image).
+FROM apache/airflow:2.9.0-python3.11
+
+USER airflow
+RUN pip install --no-cache-dir pendulum
+
+ENV PYTHONPATH=/opt/airflow/project
+ENV AIRFLOW__CORE__LAZY_LOAD_PLUGINS=true
+ENV AIRFLOW__CORE__LAZY_DISCOVER_PROVIDERS=true
