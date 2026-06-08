@@ -19,5 +19,5 @@ data/checkpoints/
 airflow/logs/
 spark-warehouse/
 
-# IDE and debug
-debug-6be8fb.log
+# Debug session logs
+debug-*.log

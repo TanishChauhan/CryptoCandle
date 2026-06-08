@@ -49,8 +49,6 @@ def validate_and_enrich(
 ) -> DataFrame:
     """
     Add validation columns (is_valid/error_code/error_message) using DataFrame expressions only.
-
-    This function must not use spark.sql strings; it is meant to be fully DataFrame API testable.
     """
     allowed_set = list(allowed_symbols)
     now_ms = (F.unix_timestamp(F.current_timestamp()) * F.lit(1000)).cast("long")
@@ -77,7 +75,7 @@ def validate_and_enrich(
     invalid_ts = (
         trade_time_ms.isNull()
         | (trade_time_ms <= 0)
-        | (trade_time_ms < (now_ms - F.lit(max_time_skew_ms)))
+        | (trade_time_ms < (now_ms - F.lit(max_time_skew_ms))) 
         | (trade_time_ms > (now_ms + F.lit(max_time_skew_ms)))
     )
 

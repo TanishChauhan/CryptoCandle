@@ -5,30 +5,15 @@ from __future__ import annotations
 import os
 import time
 
-import httpx
 from pyspark.sql import functions as F
 
-from services.spark_batch.backfill_utils import normalize_agg_trade, validate_backfill_rows
+from services.spark_batch.backfill_utils import (
+    fetch_agg_trades,
+    normalize_agg_trade,
+    validate_backfill_rows,
+)
 from services.spark_batch.common import build_spark, load_symbols
 from services.spark_batch.pg_writer import insert_pipeline_metrics
-
-
-def fetch_agg_trades(
-    *,
-    symbol: str,
-    start_ms: int,
-    end_ms: int,
-    rest_base: str,
-    limit: int = 1000,
-) -> list[dict]:
-    params = {"symbol": symbol, "startTime": start_ms, "endTime": end_ms, "limit": limit}
-    with httpx.Client(base_url=rest_base, timeout=30.0) as client:
-        response = client.get("/api/v3/aggTrades", params=params)
-        response.raise_for_status()
-        payload = response.json()
-    if not isinstance(payload, list):
-        return []
-    return payload
 
 
 def run_hourly_backfill(*, lookback_hours: int = 2) -> tuple[int, int]:

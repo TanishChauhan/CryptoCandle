@@ -1,4 +1,4 @@
-﻿.PHONY: help install dev-install test lint up down logs ps db-init
+﻿.PHONY: help install dev-install test lint up down logs ps db-init purge-candles
 
 help:
 	@echo "Targets:"
@@ -10,6 +10,7 @@ help:
 	@echo "  down          Stop Docker stack"
 	@echo "  ps            Show compose service status"
 	@echo "  db-init       Apply analytics schema to Postgres (existing volumes)"
+	@echo "  purge-candles Delete old 1m candles (KEEP_DAYS=1, optional SUMMARIZE=1)"
 
 install:
 	pip install -e .
@@ -37,3 +38,6 @@ logs:
 
 db-init:
 	docker compose exec -T postgres psql -U crypto -d crypto_analytics -f /schema/init.sql
+
+purge-candles:
+	powershell -ExecutionPolicy Bypass -File scripts/purge-old-candles.ps1 -KeepDays $(or $(KEEP_DAYS),1) $(if $(SUMMARIZE),-SummarizeFirst,)

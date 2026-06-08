@@ -103,7 +103,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__LAZY_LOAD_PLUGINS: "true"
       AIRFLOW__CORE__LAZY_DISCOVER_PROVIDERS: "true"
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
       PYTHONPATH: /opt/airflow/project
       RAW_DATA_DIR: /data/raw/trades
       RAW_DATA_COMPACTED_DIR: /data/raw/trades_compacted
@@ -167,6 +167,7 @@ services:
       - ./pyproject.toml:/opt/airflow/project/pyproject.toml
       - ${HOST_DATA_DIR:-./data}:/data
     command: scheduler
+    restart: unless-stopped
     networks: [crypto-net]
 
   postgres-schema:
@@ -185,6 +186,17 @@ services:
         -v ON_ERROR_STOP=1 -f /init.sql
     networks: [crypto-net]
 
+  data-retention:
+    build:
+      context: .
+      dockerfile: services/retention/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    restart: unless-stopped
+    networks: [crypto-net]
+
   dashboard:
     build:
       context: .
@@ -196,7 +208,6 @@ services:
     ports: ["8501:8501"]
     volumes:
       - ./dashboard:/app/dashboard
-      - ./debug-6be8fb.log:/app/debug-6be8fb.log
     networks: [crypto-net]
 
 networks:

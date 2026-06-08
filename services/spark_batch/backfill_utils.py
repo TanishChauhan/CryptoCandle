@@ -1,8 +1,71 @@
-"""Pure helpers for REST backfill normalization and validation."""
+"""Pure helpers for REST backfill normalization, pagination, and validation."""
 
 from __future__ import annotations
 
+import httpx
+
 from shared.validation import validate_trade
+
+
+def fetch_agg_trades_page(
+    *,
+    symbol: str,
+    start_ms: int,
+    end_ms: int,
+    rest_base: str,
+    limit: int = 1000,
+    client: httpx.Client | None = None,
+) -> list[dict]:
+    """Fetch one page (up to ``limit`` rows) from Binance aggTrades."""
+    params = {"symbol": symbol, "startTime": start_ms, "endTime": end_ms, "limit": limit}
+    if client is not None:
+        response = client.get("/api/v3/aggTrades", params=params)
+    else:
+        with httpx.Client(base_url=rest_base, timeout=30.0) as owned:
+            response = owned.get("/api/v3/aggTrades", params=params)
+    response.raise_for_status()
+    payload = response.json()
+    if not isinstance(payload, list):
+        return []
+    return payload
+
+
+def fetch_agg_trades(
+    *,
+    symbol: str,
+    start_ms: int,
+    end_ms: int,
+    rest_base: str,
+    limit: int = 1000,
+) -> list[dict]:
+    """Fetch all aggTrades in [start_ms, end_ms] with pagination."""
+    all_trades: list[dict] = []
+    cursor = start_ms
+
+    with httpx.Client(base_url=rest_base, timeout=30.0) as client:
+        while cursor < end_ms:
+            page = fetch_agg_trades_page(
+                symbol=symbol,
+                start_ms=cursor,
+                end_ms=end_ms,
+                rest_base=rest_base,
+                limit=limit,
+                client=client,
+            )
+            if not page:
+                break
+
+            all_trades.extend(page)
+            last_ts = int(page[-1]["T"])
+            if len(page) < limit:
+                break
+
+            next_cursor = last_ts + 1
+            if next_cursor <= cursor:
+                break
+            cursor = next_cursor
+
+    return all_trades
 
 
 def normalize_agg_trade(item: dict, *, symbol: str, ingested_at_ms: int) -> dict:

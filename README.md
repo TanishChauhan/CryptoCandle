@@ -276,6 +276,8 @@ Use these to prove the pipeline is production-style, not just happy-path.
 |---------|--------------|-----|
 | No Kafka messages | Producer not running / WS disconnect | `docker compose logs producer` |
 | Spark not writing candles | Checkpoint issue or validation filtering all rows | Check `spark-streaming` logs + `pipeline_metrics` |
+| Spark `OffsetOutOfRangeException` / crash loop | Stale checkpoints after Kafka restart | `.\scripts\reset-spark-checkpoints.ps1` (or delete `data/checkpoints/stream_trades`) |
+| High `LATE_EVENT` DLQ during catch-up | Watermark used as DLQ threshold (fixed) | Set `LATE_EVENT_AFTER_MINUTES=30` (separate from `WATERMARK_MINUTES`) |
 | Empty dashboard | Postgres up but no stream yet | Wait 1–2 min after producer + spark start |
 | `relation "analytics.candles_1m" does not exist` | Postgres volume created before `init.sql` ran | `make db-init` (or apply `infra/postgres/init.sql` via psql) |
 | Airflow `ERR_EMPTY_RESPONSE` on :8081 | Webserver OOM or still booting (common on 8 GB RAM) | Use slim webserver image (`Dockerfile.webserver`); wait 3–5 min; or trigger DAGs via CLI (see below) |
@@ -283,6 +285,12 @@ Use these to prove the pipeline is production-style, not just happy-path.
 | Airflow task fails on backfill | Network/API rate limit | Retry; check `BACKFILL_LOOKBACK_HOURS` |
 | `WATERMARK_MINUTES=10` Spark error | Missing unit | Fixed via `shared/watermark.py` normalizer |
 | Windows `./data` permission errors | Bind mount permissions | Use WSL2 path or pre-create `data/` folder |
+
+**Reset Spark checkpoints only** (keeps Postgres/Kafka data):
+
+```powershell
+.\scripts\reset-spark-checkpoints.ps1
+```
 
 **Reset local state (destructive):**
 
