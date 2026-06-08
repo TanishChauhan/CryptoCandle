@@ -53,7 +53,7 @@ def _time_axis_options(*, include_selector: bool = True) -> dict:
         opts["rangeselector"] = dict(
             buttons=_TIME_RANGE_BUTTONS,
             x=0,
-            y=1.14,
+            y=1.18,
             xanchor="left",
             yanchor="top",
         )
@@ -66,10 +66,11 @@ def _apply_time_navigation(
     use_subplots: bool = False,
     slider_row: int = 1,
     selector_row: int | None = None,
+    include_selector: bool = True,
 ) -> None:
     """Time buttons + bottom rangeslider. Subplot figures must pass ``use_subplots=True``."""
     selector_row = selector_row if selector_row is not None else slider_row
-    selector_opts = _time_axis_options(include_selector=True)
+    selector_opts = _time_axis_options(include_selector=include_selector)
     slider_opts = {"rangeslider": selector_opts.pop("rangeslider")}
 
     if use_subplots:
@@ -142,8 +143,8 @@ def render_analytics_tab(symbol: str) -> None:
     fig.update_layout(
         height=720,
         hovermode="x unified",
-        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02},
-        margin={"l": 20, "r": 20, "t": 60, "b": 40},
+        legend={"orientation": "h", "yanchor": "top", "y": 1.16, "x": 1, "xanchor": "right"},
+        margin={"l": 20, "r": 20, "t": 70, "b": 40},
         uirevision=uirevision,
     )
     _apply_time_navigation(fig, use_subplots=True, slider_row=2, selector_row=1)
@@ -259,14 +260,15 @@ def render_health_tab(*, chart_hours: int) -> None:
             )
         )
     fig.update_layout(
-        height=380,
+        height=400,
         hovermode="x unified",
-        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "x": 0},
-        margin={"l": 20, "r": 20, "t": 50, "b": 40},
+        legend={"orientation": "h", "yanchor": "top", "y": 1.0, "x": 1, "xanchor": "right"},
+        margin={"l": 20, "r": 20, "t": 24, "b": 40},
         yaxis={"title": "Records per batch", "tickformat": ",d"},
         uirevision="pipeline-health",
     )
-    _apply_time_navigation(fig)
+    # Chart window is controlled by the selectbox above; keep only the bottom scrub bar here.
+    _apply_time_navigation(fig, include_selector=False)
     st.plotly_chart(fig, use_container_width=True, key="health-throughput", config=PLOTLY_CHART_CONFIG)
 
     st.markdown("#### Latest Spark batches")
