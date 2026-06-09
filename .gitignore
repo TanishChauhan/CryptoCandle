@@ -21,3 +21,5 @@ spark-warehouse/
 
 # Debug session logs
 debug-*.log
+
+docs/
