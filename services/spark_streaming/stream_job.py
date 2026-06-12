@@ -92,7 +92,7 @@ def _debug_log(hypothesis_id: str, location: str, message: str, data: dict) -> N
 
 def load_symbols() -> list[str]:
 
-    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT,SOLUSDT")
+    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT")
 
     return [s.strip().upper() for s in raw.split(",") if s.strip()]
 
@@ -204,6 +204,12 @@ def main() -> None:
 
         },
 
+    )
+
+    print(
+        f"stream_job_config STREAM_TRIGGER_SECONDS={trigger_seconds} "
+        f"STARTING_OFFSETS={starting_offsets} WATERMARK_MINUTES={watermark_minutes}",
+        flush=True,
     )
 
 

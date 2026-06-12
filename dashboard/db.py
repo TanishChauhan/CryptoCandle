@@ -24,7 +24,7 @@ def _connection_kwargs() -> dict:
 
 @lru_cache(maxsize=1)
 def get_symbols() -> tuple[str, ...]:
-    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT,SOLUSDT")
+    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT")
     return tuple(symbol.strip().upper() for symbol in raw.split(",") if symbol.strip())
 
 

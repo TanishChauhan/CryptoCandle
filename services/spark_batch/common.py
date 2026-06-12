@@ -9,7 +9,7 @@ from pyspark.sql import SparkSession
 
 
 def load_symbols() -> list[str]:
-    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT,SOLUSDT")
+    raw = os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT")
     return [symbol.strip().upper() for symbol in raw.split(",") if symbol.strip()]
 
 

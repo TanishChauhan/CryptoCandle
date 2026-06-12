@@ -12,7 +12,7 @@ from pydantic import ValidationError
 
 from shared.schema import TradeEvent
 
-DEFAULT_ALLOWED_SYMBOLS = {"BTCUSDT", "ETHUSDT", "SOLUSDT"}
+DEFAULT_ALLOWED_SYMBOLS = {"BTCUSDT", "ETHUSDT"}
 DEFAULT_TIME_SKEW_MS = 24 * 60 * 60 * 1000
 
 

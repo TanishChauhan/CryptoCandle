@@ -35,7 +35,7 @@ class ProducerConfig:
 
 
 def load_config() -> ProducerConfig:
-    symbols = [s.strip().upper() for s in os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT,SOLUSDT").split(",")]
+    symbols = [s.strip().upper() for s in os.getenv("SYMBOLS", "BTCUSDT,ETHUSDT").split(",")]
     symbols = [s for s in symbols if s]
     return ProducerConfig(
         kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:29092"),

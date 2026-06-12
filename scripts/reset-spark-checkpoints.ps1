@@ -3,9 +3,10 @@
 
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path $PSScriptRoot -Parent)
+. (Join-Path $PSScriptRoot "lib\docker-compose.ps1")
 
 Write-Host "Stopping spark-streaming..."
-docker compose --env-file .env stop spark-streaming
+Invoke-Compose -Command @("stop", "spark-streaming") | Out-Null
 
 $checkpointDir = Join-Path (Get-Location) "data\checkpoints\stream_trades"
 if (Test-Path $checkpointDir) {
@@ -14,5 +15,5 @@ if (Test-Path $checkpointDir) {
 }
 
 Write-Host "Starting spark-streaming..."
-docker compose --env-file .env up -d spark-streaming
+Invoke-Compose -Command @("up", "-d", "spark-streaming") | Out-Null
 Write-Host "Done. Spark will recreate checkpoints from STARTING_OFFSETS (default: latest)."

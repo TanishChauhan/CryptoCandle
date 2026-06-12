@@ -24,8 +24,8 @@ services:
     healthcheck:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:29092"]
       interval: 10s
-      timeout: 10s
-      retries: 5
+      timeout: 30s
+      retries: 10
     networks: [crypto-net]
 
   kafka-init:
@@ -84,9 +84,12 @@ services:
     env_file: .env
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SPARK_DRIVER_MEMORY: 512m
+      SPARK_EXECUTOR_MEMORY: 512m
     volumes:
       - ${HOST_DATA_DIR:-./data}:/data
     restart: unless-stopped
+    mem_limit: 1g
     networks: [crypto-net]
 
   airflow-init:
@@ -104,6 +107,7 @@ services:
       AIRFLOW__CORE__LAZY_LOAD_PLUGINS: "true"
       AIRFLOW__CORE__LAZY_DISCOVER_PROVIDERS: "true"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY:-local_dev_airflow_secret_key}
       PYTHONPATH: /opt/airflow/project
       RAW_DATA_DIR: /data/raw/trades
       RAW_DATA_COMPACTED_DIR: /data/raw/trades_compacted
@@ -137,9 +141,11 @@ services:
       AIRFLOW__WEBSERVER__WORKERS: "1"
       AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: "300"
       AIRFLOW__WEBSERVER__WORKER_REFRESH_INTERVAL: "6000"
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY:-local_dev_airflow_secret_key}
       PYTHONPATH: /opt/airflow/project
     volumes:
       - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
     ports: ["8081:8080"]
     command: webserver
     restart: unless-stopped
@@ -157,16 +163,27 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://crypto:crypto_secret@postgres:5432/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY:-local_dev_airflow_secret_key}
       PYTHONPATH: /opt/airflow/project
       RAW_DATA_DIR: /data/raw/trades
       RAW_DATA_COMPACTED_DIR: /data/raw/trades_compacted
     volumes:
       - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
       - ./services:/opt/airflow/project/services
       - ./shared:/opt/airflow/project/shared
       - ./pyproject.toml:/opt/airflow/project/pyproject.toml
       - ${HOST_DATA_DIR:-./data}:/data
-    command: scheduler
+    user: "0:0"
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        mkdir -p /data/raw/trades /data/raw/trades_compacted /data/checkpoints/stream_trades /opt/airflow/logs
+        chown -R 50000:0 /data /opt/airflow/logs 2>/dev/null || true
+        chmod -R a+rwX /data /opt/airflow/logs 2>/dev/null || chmod -R 777 /data /opt/airflow/logs
+        export PATH="/home/airflow/.local/bin:/usr/local/bin:/usr/bin:/bin"
+        exec su -s /bin/bash airflow -c 'exec /entrypoint scheduler'
     restart: unless-stopped
     networks: [crypto-net]
 
