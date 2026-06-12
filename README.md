@@ -21,36 +21,7 @@ A production-grade hybrid data platform for cryptocurrency analytics — combini
 
 ## Architecture Overview
 
-```
-Binance WebSocket
-       │
-       ▼
-  Kafka Producer
-  (async Python)
-       │
-       ▼
-  Kafka Topic
-  (raw trades)
-       │
-       ├──────────────────────────┐
-       ▼                          ▼
-PySpark Structured           Kafka DLQ
-   Streaming                (invalid records)
-       │
-       ├─────────────────────────────────┐
-       ▼                                 ▼
-PostgreSQL (OHLC candles)       Parquet Archive
-(idempotent upserts)            (partitioned by
-                                 year/month/day/hour)
-       │
-       ▼
-  Streamlit Dashboard
-  (sub-30s latency)
-       │
-       ▼
-  Airflow DAGs
-  (backfill · compaction · quality · retention)
-```
+![Hybrid lambda architecture: speed layer, batch layer, and serving layer](docs/screenshots/arch.png)
 
 ---
 
